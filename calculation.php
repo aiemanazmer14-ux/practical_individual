@@ -1,0 +1,95 @@
+<?php
+
+$showBill = false;
+$error = "";
+
+$block1 = "";
+$block2 = "";
+$block3 = "";
+$block4 = "";
+$block5 = "";
+
+//when click calculate button, it triggers the calculation and display the result
+if (isset($_POST['Calculate'])) {
+
+        $block1 = $_POST['block1'];
+        $block2 = $_POST['block2'];
+        $block3 = $_POST['block3'];
+        $block4 = $_POST['block4'];
+        $block5 = $_POST['block5'];
+
+        //empty box means block not used, so make it 0
+        if($block1 == ""){
+            $block1 = 0;
+        }
+        if($block2 == ""){
+            $block2 = 0;
+        }
+        if($block3 == ""){
+            $block3 = 0;
+        }
+        if($block4 == ""){
+            $block4 = 0;
+        }
+        if($block5 == ""){
+            $block5 = 0;
+        }
+
+        //make sure enter value is number
+        if(!is_numeric($block1) || 
+        !is_numeric($block2) || 
+        !is_numeric($block3) || 
+        !is_numeric($block4) || 
+        !is_numeric($block5)){
+            $error = "Please enter numbers only!";
+        }
+
+        //meter reading cannot less than zero
+        else if($block1 < 0 || $block2 < 0 || $block3 < 0 || $block4 < 0 || $block5 < 0){
+            $error = "kWh cannot be a negative number. Try again!";
+        }
+
+        //each block hold fixed amount of kWh
+        else if($block1 > 200) {
+            $error = "The first block can only hold 200 kWh. Try again!";
+        }
+        else if($block2 > 100){
+            $error = "The second block can only hold 100 kWh. Try again!";
+        }
+        else if($block3 > 300){
+            $error = "The third block can only hold 300 kWh. Try again!";
+        }
+        else if($block4 > 300){
+            $error = "The fourth block can only hold 300 kWh. Try again!";
+        }
+        else if($block5 > 900){
+            $error = "The fifth block can only hold 900 kWh. Try again!";
+        }
+        //$block5 has no limit because tariff says "901kWh onwards"
+        else{
+
+        
+        $charge1 = $block1 * 0.218;
+        $charge2 = $block2 * 0.344;
+        $charge3 = $block3 * 0.516;
+        $charge4 = $block4 * 0.546;
+        $charge5 = $block5 * 0.571;
+
+        $totalKwh = $block1 + $block2 + $block3 + $block4 + $block5;
+        $totalCharge = $charge1 + $charge2 + $charge3 + $charge4 + $charge5;
+
+        if($totalCharge < 3.00){
+            $totalCharge = 3.00;    
+        }
+
+        if ($totalKwh > 600){
+            $sst = $totalCharge * 0.06;
+        } else{
+            $sst = 0;
+        }
+
+        $totalBill = $totalCharge + $sst;
+        $showBill = true;
+        }
+
+    } 
